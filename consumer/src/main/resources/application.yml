@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: consumer
+
+  threads:
+    virtual:
+      enabled: true
+
+  rabbitmq:
+    listener:
+      simple:
+        concurrency: 1
+        retry:
+          enabled: true
+          initial-interval: 2s
+          max-attempts: 5
+          multiplier: 2
+
+server:
+  port: 8081

@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: producer
+
+  threads:
+    virtual:
+      enabled: true
+
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: myuser
+    password: secret
