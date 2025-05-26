@@ -1,5 +1,6 @@
 package it.codingjam.rabbimqretry.config;
 
+import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.config.ContainerCustomizer;
 import org.springframework.amqp.rabbit.config.RetryInterceptorBuilder;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -13,9 +14,10 @@ import org.springframework.retry.policy.CompositeRetryPolicy;
 import org.springframework.retry.policy.PredicateRetryPolicy;
 import org.springframework.retry.policy.SimpleRetryPolicy;
 
+import java.util.Map;
 import java.util.Set;
 
-import static it.codingjam.rabbimqretry.config.RabbitMQConsumerConfig.ORDERS_DLE;
+import static it.codingjam.rabbimqretry.config.RabbitMQConsumerConfig.APP_DLX;
 
 @Configuration
 public class RabbitMQRetryConfig {
@@ -33,7 +35,7 @@ public class RabbitMQRetryConfig {
                         retryProperties.getInitialInterval().toMillis(),
                         retryProperties.getMultiplier(),
                         retryProperties.getMaxInterval().toMillis())
-                .recoverer(new RepublishMessageRecoverer(rabbitTemplate, ORDERS_DLE, ""))
+                .recoverer(new DqlRepublishMessageRecoverer(rabbitTemplate, APP_DLX, ""))
                 .build());
     }
 
@@ -45,5 +47,21 @@ public class RabbitMQRetryConfig {
         CompositeRetryPolicy compositeRetryPolicy = new CompositeRetryPolicy();
         compositeRetryPolicy.setPolicies(new RetryPolicy[] {simpleRetryPolicy, predicateRetryPolicy});
         return compositeRetryPolicy;
+    }
+
+    static class DqlRepublishMessageRecoverer extends RepublishMessageRecoverer {
+
+        public static final String X_ORIGINAL_CONSUMER_Q = "x-original-consumerQueue";
+
+        DqlRepublishMessageRecoverer(RabbitTemplate rabbitTemplate, String exchange, String routingKey) {
+            super(rabbitTemplate, exchange, routingKey);
+        }
+
+        @Override
+        protected Map<? extends String, ?> additionalHeaders(Message message, Throwable cause) {
+            return Map.of(
+                    X_ORIGINAL_CONSUMER_Q, message.getMessageProperties().getConsumerQueue()
+            );
+        }
     }
 }

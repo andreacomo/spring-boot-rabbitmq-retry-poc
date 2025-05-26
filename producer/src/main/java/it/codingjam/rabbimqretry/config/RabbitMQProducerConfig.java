@@ -1,6 +1,6 @@
 package it.codingjam.rabbimqretry.config;
 
-import org.springframework.amqp.core.*;
+import org.springframework.amqp.core.TopicExchange;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -11,7 +11,7 @@ public class RabbitMQProducerConfig {
     public static final String ORDER_CREATED_RK = "order.created";
 
     @Bean
-    public DirectExchange ordersExchange() {
-        return new DirectExchange(ORDERS_EXCHANGE);
+    public TopicExchange ordersExchange() {
+        return new TopicExchange(ORDERS_EXCHANGE);
     }
 }

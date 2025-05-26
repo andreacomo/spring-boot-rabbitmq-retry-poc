@@ -1,5 +1,6 @@
 package it.codingjam.rabbimqretry.consumers;
 
+import it.codingjam.rabbimqretry.config.RabbitMQConsumerConfig;
 import it.codingjam.rabbimqretry.consumers.dtos.OrderDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +17,7 @@ public class OrderConsumer {
 
     private final JsonDeserializer deserializer;
 
-    @RabbitListener(queues = "create_order_queue")
+    @RabbitListener(queues = RabbitMQConsumerConfig.CREATE_ORDER_QUEUE)
     public void listen(Message message) {
         log.info("Received message: {}", message);
         OrderDto order = deserializer.fromByteArray(message.getBody(), OrderDto.class);
