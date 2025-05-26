@@ -22,6 +22,8 @@ import static it.codingjam.rabbimqretry.config.RabbitMQConsumerConfig.APP_DLX;
 @Configuration
 public class RabbitMQRetryConfig {
 
+    private static final Set<Class<IllegalArgumentException>> SKIP_RETRY_FOR = Set.of(IllegalArgumentException.class);
+
     @Bean
     public ContainerCustomizer<SimpleMessageListenerContainer> customizer(
             RabbitProperties rabbitProperties,
@@ -40,12 +42,12 @@ public class RabbitMQRetryConfig {
     }
 
     private static RetryPolicy getRetryPolicy(RabbitProperties.ListenerRetry retryProperties) {
-        Set<Class<IllegalArgumentException>> skipRetryFor = Set.of(IllegalArgumentException.class);
-        PredicateRetryPolicy predicateRetryPolicy = new PredicateRetryPolicy(e -> !skipRetryFor.contains(e.getClass()) && !skipRetryFor.contains(e.getCause().getClass()));
+        PredicateRetryPolicy predicateRetryPolicy = new PredicateRetryPolicy(e -> !SKIP_RETRY_FOR.contains(e.getClass()) && !SKIP_RETRY_FOR.contains(e.getCause().getClass()));
         SimpleRetryPolicy simpleRetryPolicy = new SimpleRetryPolicy(retryProperties.getMaxAttempts());
 
         CompositeRetryPolicy compositeRetryPolicy = new CompositeRetryPolicy();
         compositeRetryPolicy.setPolicies(new RetryPolicy[] {simpleRetryPolicy, predicateRetryPolicy});
+
         return compositeRetryPolicy;
     }
 
