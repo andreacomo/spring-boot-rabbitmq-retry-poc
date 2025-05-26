@@ -41,7 +41,7 @@ Use cases:
 A unique DLQ has been configured (exchange `orders-exchange` -> queue `app-dead-letter-exchange` - no binding key). Every message will contain:
 * Exception message
 * Stacktrace
-* Oridinal consumer queue
+* Original consumer queue
 * Original exchange
 * Original binding key
 * Original payload
