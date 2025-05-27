@@ -14,6 +14,7 @@ import org.springframework.retry.policy.CompositeRetryPolicy;
 import org.springframework.retry.policy.PredicateRetryPolicy;
 import org.springframework.retry.policy.SimpleRetryPolicy;
 
+import java.time.Instant;
 import java.util.Map;
 import java.util.Set;
 
@@ -55,6 +56,8 @@ public class RabbitMQRetryConfig {
 
         public static final String X_ORIGINAL_CONSUMER_Q = "x-original-consumerQueue";
 
+        private static final String X_RETRY_EXHAUSTED_AT = "x-retry-exhaustedAt";
+
         DqlRepublishMessageRecoverer(RabbitTemplate rabbitTemplate, String exchange, String routingKey) {
             super(rabbitTemplate, exchange, routingKey);
         }
@@ -62,7 +65,8 @@ public class RabbitMQRetryConfig {
         @Override
         protected Map<? extends String, ?> additionalHeaders(Message message, Throwable cause) {
             return Map.of(
-                    X_ORIGINAL_CONSUMER_Q, message.getMessageProperties().getConsumerQueue()
+                    X_ORIGINAL_CONSUMER_Q, message.getMessageProperties().getConsumerQueue(),
+                    X_RETRY_EXHAUSTED_AT, Instant.now().toString()
             );
         }
     }
