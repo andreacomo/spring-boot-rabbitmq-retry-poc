@@ -1,18 +1,24 @@
 package it.codingjam.rabbimqretry.consumers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
+
 @Component
-@RequiredArgsConstructor
 class JsonDeserializer {
 
     private final ObjectMapper objectMapper;
 
-    @SneakyThrows
+    public JsonDeserializer(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
+    }
+
     public <T> T fromByteArray(byte[] data, Class<T> clazz) {
-        return objectMapper.readValue(data, clazz);
+        try {
+            return objectMapper.readValue(data, clazz);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

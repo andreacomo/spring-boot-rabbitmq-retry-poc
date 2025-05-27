@@ -1,18 +1,23 @@
 package it.codingjam.rabbimqretry.producers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.springframework.stereotype.Component;
 
 @Component
-@RequiredArgsConstructor
 class JsonSerializer {
 
     private final ObjectMapper objectMapper;
 
-    @SneakyThrows
+    JsonSerializer(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
+    }
+
     public <T> byte[] toByteArray(T data) {
-        return objectMapper.writeValueAsBytes(data);
+        try {
+            return objectMapper.writeValueAsBytes(data);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
