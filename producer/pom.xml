@@ -6,7 +6,6 @@
 		<groupId>it.codingjam.rabbimqretry</groupId>
 		<artifactId>spring-boot-rabbitmq-retry-poc</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
-		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<artifactId>producer</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
